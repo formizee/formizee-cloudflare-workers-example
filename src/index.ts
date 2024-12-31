@@ -1,18 +1,26 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.toml`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+const ENDPOINT = "enp_123456";
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
+	async fetch(
+		_request: Request,
+		_env: Env,
+		_ctx: ExecutionContext,
+	): Promise<Response> {
+		const res = await fetch(`https://api.formizee.com/v1/f/${ENDPOINT}`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				name: "example",
+				email: "example@mail.com",
+			}),
+		});
+		const data = await res.json();
+		return new Response(JSON.stringify(data), {
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
 	},
-} satisfies ExportedHandler<Env>;
+};
